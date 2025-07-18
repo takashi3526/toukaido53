@@ -80,8 +80,8 @@
                         </div>
                     </div>
                     <div>
-                        
-                        
+                        <input type="file" id="photoUpload" class="photo-upload" accept="image/*" onchange="handlePhotoUpload(event)">
+                        <button class="photo-upload-btn styled-btn" onclick="document.getElementById('photoUpload').click()">写真を選択</button>
                         <button class="photo-remove-btn styled-btn" onclick="removePhoto()" id="photoRemoveBtn" style="display: none;">写真を削除</button>
                     </div>
                 </div>
