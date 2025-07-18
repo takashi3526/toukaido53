@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'HG明朝E', 'MS P明朝', 'MS PMincho', serif;
-    background: linear-gradient(135deg, #f5f1e8 0%, #e8ddd4 100%);
+    background: linear-gradient(135deg, #ede3d2 0%, #e3d3b8 100%);
     min-height: 100vh;
     padding: 20px;
     color: #3c3c3c;
@@ -15,16 +15,16 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    background: rgba(255, 253, 248, 0.95);
+    background: rgba(255, 250, 240, 0.97);
     border-radius: 8px;
     box-shadow: 0 8px 24px rgba(139, 125, 107, 0.15);
     overflow: hidden;
-    border: 1px solid rgba(139, 125, 107, 0.1);
+    border: 1px solid #f3e1c7;
 }
 
 .header {
-    background: linear-gradient(135deg, #8b7d6b 0%, #6d5d4f 100%);
-    color: #f5f1e8;
+    background: linear-gradient(135deg, #bfa77a 0%, #a68b5b 100%);
+    color: #fff8f0;
     padding: 30px;
     text-align: center;
     position: relative;
@@ -37,7 +37,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10 50 Q30 30 50 50 Q70 70 90 50" fill="none" stroke="rgba(245,241,232,0.1)" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="rgba(245,241,232,0.1)"/><circle cx="80" cy="80" r="3" fill="rgba(245,241,232,0.1)"/></svg>');
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10 50 Q30 30 50 50 Q70 70 90 50" fill="none" stroke="rgba(255, 200, 120, 0.08)" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="rgba(255, 200, 120, 0.08)"/><circle cx="80" cy="80" r="3" fill="rgba(255, 200, 120, 0.08)"/></svg>');
     opacity: 0.3;
 }
 
@@ -55,10 +55,11 @@ body {
     z-index: 1;
 }
 
+/* ログインセクションの背景を薄い茶色系に */
 .login-section {
+    background: #f6ede2;
+    border-bottom: 1px solid #e3d3b8;
     padding: 20px 30px;
-    background: rgba(52, 152, 219, 0.1);
-    border-bottom: 1px solid rgba(52, 152, 219, 0.2);
 }
 
 .login-form {
@@ -69,37 +70,42 @@ body {
     flex-wrap: wrap;
 }
 
-.login-form input {
-    padding: 12px 20px;
-    border: 2px solid #3498db;
+/* ユーザー名入力欄を茶色系に */
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    border: 2px solid #a68b5b;
+    background: #f6ede2;
+    color: #6d5d4f;
     border-radius: 25px;
     font-size: 16px;
     min-width: 200px;
+    padding: 12px 20px;
     transition: all 0.3s ease;
 }
-
-.login-form input:focus {
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
     outline: none;
-    border-color: #2980b9;
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+    border-color: #bfa77a;
+    box-shadow: 0 0 10px rgba(166, 139, 91, 0.15);
 }
 
+/* ログインボタンを茶色系に */
 .login-form button {
-    padding: 12px 30px;
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
+    background: linear-gradient(135deg, #a68b5b, #bfa77a);
+    color: #fff;
     border: none;
     border-radius: 25px;
     font-size: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    padding: 12px 30px;
     font-weight: bold;
+    transition: all 0.3s ease;
 }
-
 .login-form button:hover {
-    background: linear-gradient(135deg, #2980b9, #21618c);
+    background: linear-gradient(135deg, #bfa77a, #a68b5b);
+    color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 5px 15px rgba(166, 139, 91, 0.15);
 }
 
 .user-info {
@@ -110,8 +116,8 @@ body {
 }
 
 .logout-btn {
-    background: #e74c3c;
-    color: white;
+    background: linear-gradient(135deg, #ffb366, #ff9900);
+    color: #fff;
     border: none;
     padding: 8px 20px;
     border-radius: 20px;
@@ -119,9 +125,9 @@ body {
     margin-left: 15px;
     transition: all 0.3s ease;
 }
-
 .logout-btn:hover {
-    background: #c0392b;
+    background: linear-gradient(135deg, #ff9900, #ffb366);
+    color: #fff;
     transform: translateY(-2px);
 }
 
@@ -137,12 +143,12 @@ body {
 .stat-item {
     text-align: center;
     padding: 20px;
-    background: rgba(255, 253, 248, 0.9);
+    background: #fff7ed;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(139, 125, 107, 0.1);
     min-width: 150px;
     transition: transform 0.3s ease;
-    border: 1px solid rgba(139, 125, 107, 0.1);
+    border: 1px solid #ffd9a0;
 }
 
 .stat-item:hover {
@@ -164,7 +170,7 @@ body {
 .progress-bar {
     width: 100%;
     height: 8px;
-    background: rgba(139, 125, 107, 0.2);
+    background: #ffe5b4;
     border-radius: 4px;
     overflow: hidden;
     margin-top: 10px;
@@ -172,7 +178,7 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #8b7d6b, #a0927d);
+    background: linear-gradient(90deg, #ffb366, #ffd9a0);
     transition: width 0.5s ease;
 }
 
@@ -184,12 +190,12 @@ body {
 }
 
 .station-card {
-    background: white;
+    background: #fffaf3;
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    border: 2px solid transparent;
+    border: 2px solid #ffd9a0;
 }
 
 .station-card:hover {
@@ -198,8 +204,8 @@ body {
 }
 
 .station-card.visited {
-    border-color: #2ecc71;
-    background: linear-gradient(135deg, #d5f4e6, #ffffff);
+    border-color: #ffd9a0;
+    background: linear-gradient(135deg, #fff2e0, #fffaf3);
 }
 
 .station-header {
@@ -210,8 +216,8 @@ body {
 }
 
 .station-number {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
+    background: linear-gradient(135deg, #ffb366, #ffd9a0);
+    color: #fff;
     padding: 8px 15px;
     border-radius: 20px;
     font-weight: bold;
@@ -266,7 +272,7 @@ body {
 
 .visited-date {
     font-size: 0.8em;
-    color: #27ae60;
+    color: #ff9900;
     margin-top: 5px;
     font-style: italic;
 }
@@ -286,7 +292,7 @@ body {
 
 .filter-btn {
     padding: 10px 20px;
-    border: 2px solid #3498db;
+    border: 2px solid #ffd9a0;
     background: white;
     color: #3498db;
     border-radius: 20px;
@@ -314,7 +320,7 @@ body {
     border-radius: 25px;
     border: none;
     padding: 10px 24px;
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: linear-gradient(135deg, #b0b0b0, #888888);
     color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -322,7 +328,7 @@ body {
     margin: 0 4px;
 }
 .styled-btn:hover {
-    background: linear-gradient(135deg, #2980b9, #21618c);
+    background: linear-gradient(135deg, #888888, #b0b0b0);
     color: #fff;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(52, 152, 219, 0.15);
@@ -345,10 +351,10 @@ body {
 .styled-modal.station-detail {
     font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'HG明朝E', 'MS P明朝', 'MS PMincho', serif;
     color: #3c3c3c;
-    background: rgba(255, 253, 248, 0.98);
+    background: #fffaf3;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(139, 125, 107, 0.18);
-    border: 2px solid #8b7d6b;
+    border: 2px solid #ffd9a0;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -373,11 +379,11 @@ body {
 .styled-modal .detail-title {
     font-size: 1.5em;
     font-weight: bold;
-    color: #8b7d6b;
+    color: #ff9900;
     letter-spacing: 0.05em;
 }
 .styled-modal .close-btn {
-    background: #e74c3c;
+    background: linear-gradient(135deg, #ffb366, #ff9900);
     color: #fff;
     border-radius: 50%;
     width: 36px;
@@ -390,11 +396,11 @@ body {
     margin: 0;
 }
 .styled-modal .close-btn:hover {
-    background: #c0392b;
+    background: linear-gradient(135deg, #ff9900, #ffb366);
 }
 .styled-modal .detail-info h3,
 .styled-modal .photo-section h3 {
-    color: #6d5d4f;
+    color: #ff9900;
     font-size: 1.1em;
     margin-bottom: 8px;
     font-weight: bold;
@@ -407,9 +413,9 @@ body {
     margin: 18px 0 18px 0;
 }
 .styled-modal .photo-preview {
-    border: 1.5px dashed #8b7d6b;
+    border: 1.5px dashed #ffb366;
     border-radius: 10px;
-    background: #f5f1e8;
+    background: #fff7ed;
     min-height: 120px;
     display: flex;
     align-items: center;
@@ -425,7 +431,7 @@ body {
     box-shadow: 0 2px 8px rgba(139, 125, 107, 0.12);
 }
 .styled-modal .photo-placeholder {
-    color: #a0927d;
+    color: #ffb366;
     text-align: center;
 }
 .styled-modal .photo-upload-btn,
@@ -437,15 +443,15 @@ body {
 }
 .styled-modal .form-group label {
     font-weight: bold;
-    color: #6d5d4f;
+    color: #ff9900;
     margin-right: 8px;
 }
 .styled-modal .form-group input[type="date"] {
     padding: 8px 14px;
-    border: 1.5px solid #8b7d6b;
+    border: 1.5px solid #ffb366;
     border-radius: 8px;
     font-size: 1em;
-    background: #fdfcf9;
+    background: #fffaf3;
     color: #3c3c3c;
     margin-top: 4px;
 }
@@ -463,11 +469,33 @@ body {
     background: #636e72;
 }
 .styled-modal .save-btn {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    background: linear-gradient(135deg, #a68b5b, #bfa77a);
     color: #fff;
 }
 .styled-modal .save-btn:hover {
-    background: linear-gradient(135deg, #27ae60, #229954);
+    background: linear-gradient(135deg, #bfa77a, #a68b5b);
+}
+
+/* 訪問済みチェックボックスの色を茶色系に */
+.visit-checkbox input[type="checkbox"] {
+    accent-color: #a68b5b;
+    /* fallback for browsers not supporting accent-color */
+    border: 2px solid #a68b5b;
+}
+
+/* フィルターボタンの文字色を茶色、選択時の塗りつぶしも茶色 */
+.filter-btn {
+    color: #a68b5b;
+    background: #fff;
+    border: 2px solid #ffd9a0;
+    font-weight: bold;
+    transition: background 0.3s, color 0.3s;
+}
+.filter-btn:hover,
+.filter-btn.active {
+    background: #a68b5b;
+    color: #fff;
+    border-color: #a68b5b;
 }
 
 @media (max-width: 768px) {
