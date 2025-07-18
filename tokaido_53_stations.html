@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>東海道53次 宿場町チェックリスト</title>
+    <link rel="stylesheet" href="tokaido_53_stations.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>東海道53次 宿場町</h1>
+            <p>江戸時代の東海道を辿る旅の記録</p>
+        </div>
+
+        <div class="login-section">
+            <div id="loginForm" class="login-form">
+                <input type="text" id="username" placeholder="ユーザー名を入力" />
+                <button onclick="login()">ログイン</button>
+            </div>
+            <div id="userInfo" class="user-info hidden">
+                <span id="currentUser"></span>
+                <button class="logout-btn" onclick="logout()">ログアウト</button>
+            </div>
+        </div>
+
+        <div id="mainContent" class="hidden">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="visitedCount">0</div>
+                    <div class="stat-label">訪問済み</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="remainingCount">53</div>
+                    <div class="stat-label">未訪問</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="progressPercent">0%</div>
+                    <div class="stat-label">達成率</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterStations('all')">すべて</button>
+                    <button class="filter-btn" onclick="filterStations('visited')">訪問済み</button>
+                    <button class="filter-btn" onclick="filterStations('unvisited')">未訪問</button>
+                </div>
+            </div>
+
+            <div class="stations-grid" id="stationsGrid">
+                <!-- 宿場カードがここに生成されます -->
+            </div>
+        </div>
+
+        <!-- 宿場詳細モーダル -->
+        <div id="stationDetail" class="station-detail hidden styled-modal">
+            <div class="detail-content">
+                <div class="detail-header">
+                    <div class="detail-title" id="detailTitle"></div>
+                    <button class="close-btn styled-btn" onclick="closeStationDetail()">×</button>
+                </div>
+                
+                <div class="detail-info">
+                    <h3>基本情報</h3>
+                    <p><strong>読み方:</strong> <span id="detailReading"></span></p>
+                    <p><strong>所在地:</strong> <span id="detailLocation"></span></p>
+                    <p><strong>宿場番号:</strong> <span id="detailNumber"></span></p>
+                </div>
+
+                <div class="photo-section">
+                    <h3>写真</h3>
+                    <div class="photo-preview" id="photoPreview">
+                        <div class="photo-placeholder">
+                            <p>写真を追加してください</p>
+                            <p style="font-size: 0.9em; margin-top: 5px;">クリックまたはドラッグ＆ドロップ</p>
+                        </div>
+                    </div>
+                    <div>
+                        <input type="file" id="photoUpload" class="photo-upload" accept="image/*" onchange="handlePhotoUpload(event)">
+                        <button class="photo-upload-btn styled-btn" onclick="document.getElementById('photoUpload').click()">写真を選択</button>
+                        <button class="photo-remove-btn styled-btn" onclick="removePhoto()" id="photoRemoveBtn" style="display: none;">写真を削除</button>
+                    </div>
+                </div>
+
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label for="visitDate">訪問日</label>
+                        <input type="date" id="visitDate" />
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="cancel-btn styled-btn" onclick="closeStationDetail()">キャンセル</button>
+                        <button class="save-btn styled-btn" onclick="saveStationData()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 東海道53次の宿場データ
+        const stations = [
+            { number: 1, name: "日本橋", reading: "にほんばし", location: "東京都中央区" },
+            { number: 2, name: "品川", reading: "しながわ", location: "東京都品川区" },
+            { number: 3, name: "川崎", reading: "かわさき", location: "神奈川県川崎市" },
+            { number: 4, name: "神奈川", reading: "かながわ", location: "神奈川県横浜市" },
+            { number: 5, name: "保土ヶ谷", reading: "ほどがや", location: "神奈川県横浜市" },
+            { number: 6, name: "戸塚", reading: "とつか", location: "神奈川県横浜市" },
+            { number: 7, name: "藤沢", reading: "ふじさわ", location: "神奈川県藤沢市" },
+            { number: 8, name: "平塚", reading: "ひらつか", location: "神奈川県平塚市" },
+            { number: 9, name: "大磯", reading: "おおいそ", location: "神奈川県大磯町" },
+            { number: 10, name: "小田原", reading: "おだわら", location: "神奈川県小田原市" },
+            { number: 11, name: "箱根", reading: "はこね", location: "神奈川県箱根町" },
+            { number: 12, name: "三島", reading: "みしま", location: "静岡県三島市" },
+            { number: 13, name: "沼津", reading: "ぬまづ", location: "静岡県沼津市" },
+            { number: 14, name: "原", reading: "はら", location: "静岡県沼津市" },
+            { number: 15, name: "吉原", reading: "よしわら", location: "静岡県富士市" },
+            { number: 16, name: "蒲原", reading: "かんばら", location: "静岡県静岡市" },
+            { number: 17, name: "由比", reading: "ゆい", location: "静岡県静岡市" },
+            { number: 18, name: "興津", reading: "おきつ", location: "静岡県静岡市" },
+            { number: 19, name: "江尻", reading: "えじり", location: "静岡県静岡市" },
+            { number: 20, name: "府中", reading: "ふちゅう", location: "静岡県静岡市" },
+            { number: 21, name: "丸子", reading: "まりこ", location: "静岡県静岡市" },
+            { number: 22, name: "岡部", reading: "おかべ", location: "静岡県藤枝市" },
+            { number: 23, name: "藤枝", reading: "ふじえだ", location: "静岡県藤枝市" },
+            { number: 24, name: "島田", reading: "しまだ", location: "静岡県島田市" },
+            { number: 25, name: "金谷", reading: "かなや", location: "静岡県島田市" },
+            { number: 26, name: "日坂", reading: "にっさか", location: "静岡県掛川市" },
+            { number: 27, name: "掛川", reading: "かけがわ", location: "静岡県掛川市" },
+            { number: 28, name: "袋井", reading: "ふくろい", location: "静岡県袋井市" },
+            { number: 29, name: "見附", reading: "みつけ", location: "静岡県磐田市" },
+            { number: 30, name: "浜松", reading: "はままつ", location: "静岡県浜松市" },
+            { number: 31, name: "舞阪", reading: "まいさか", location: "静岡県浜松市" },
+            { number: 32, name: "新居", reading: "あらい", location: "静岡県湖西市" },
+            { number: 33, name: "白須賀", reading: "しらすか", location: "静岡県湖西市" },
+            { number: 34, name: "二川", reading: "ふたがわ", location: "愛知県豊橋市" },
+            { number: 35, name: "吉田", reading: "よしだ", location: "愛知県豊橋市" },
+            { number: 36, name: "御油", reading: "ごゆ", location: "愛知県豊川市" },
+            { number: 37, name: "赤坂", reading: "あかさか", location: "愛知県豊川市" },
+            { number: 38, name: "藤川", reading: "ふじかわ", location: "愛知県岡崎市" },
+            { number: 39, name: "岡崎", reading: "おかざき", location: "愛知県岡崎市" },
+            { number: 40, name: "池鯉鮒", reading: "ちりふ", location: "愛知県知立市" },
+            { number: 41, name: "鳴海", reading: "なるみ", location: "愛知県名古屋市" },
+            { number: 42, name: "宮", reading: "みや", location: "愛知県名古屋市" },
+            { number: 43, name: "桑名", reading: "くわな", location: "三重県桑名市" },
+            { number: 44, name: "四日市", reading: "よっかいち", location: "三重県四日市市" },
+            { number: 45, name: "石薬師", reading: "いしやくし", location: "三重県鈴鹿市" },
+            { number: 46, name: "庄野", reading: "しょうの", location: "三重県鈴鹿市" },
+            { number: 47, name: "亀山", reading: "かめやま", location: "三重県亀山市" },
+            { number: 48, name: "関", reading: "せき", location: "三重県亀山市" },
+            { number: 49, name: "坂下", reading: "さかした", location: "三重県亀山市" },
+            { number: 50, name: "土山", reading: "つちやま", location: "滋賀県甲賀市" },
+            { number: 51, name: "水口", reading: "みなくち", location: "滋賀県甲賀市" },
+            { number: 52, name: "石部", reading: "いしべ", location: "滋賀県湖南市" },
+            { number: 53, name: "草津", reading: "くさつ", location: "滋賀県草津市" },
+            { number: 54, name: "大津", reading: "おおつ", location: "滋賀県大津市" }
+        ];
+
+        let currentUser = null;
+        let userData = {};
+        let currentFilter = 'all';
+        let currentEditingStation = null;
+
+        // ユーザーデータの管理
+        function saveUserData() {
+            const allUserData = JSON.parse(localStorage.getItem('tokaidoUsers') || '{}');
+            allUserData[currentUser] = userData;
+            localStorage.setItem('tokaidoUsers', JSON.stringify(allUserData));
+        }
+
+        function loadUserData() {
+            const allUserData = JSON.parse(localStorage.getItem('tokaidoUsers') || '{}');
+            userData = allUserData[currentUser] || {};
+        }
+
+        // 宿場詳細モーダルを開く
+        function openStationDetail(stationNumber) {
+            currentEditingStation = stationNumber;
+            const station = stations.find(s => s.number === stationNumber);
+            const stationKey = `station_${stationNumber}`;
+            const stationData = userData[stationKey] || {};
+
+            document.getElementById('detailTitle').textContent = `${station.number}. ${station.name}`;
+            document.getElementById('detailReading').textContent = station.reading;
+            document.getElementById('detailLocation').textContent = station.location;
+            document.getElementById('detailNumber').textContent = station.number;
+
+            // 訪問日を設定
+            const visitDate = stationData.date ? convertDateFormat(stationData.date) : '';
+            document.getElementById('visitDate').value = visitDate;
+
+            // 写真を表示
+            displayPhoto(stationData.photo);
+
+            document.getElementById('stationDetail').classList.remove('hidden');
+        }
+
+        // 宿場詳細モーダルを閉じる
+        function closeStationDetail() {
+            document.getElementById('stationDetail').classList.add('hidden');
+            currentEditingStation = null;
+        }
+
+        // 日付フォーマット変換（表示用からinput用）
+        function convertDateFormat(dateStr) {
+            if (!dateStr) return '';
+            // "2024/1/15" → "2024-01-15"
+            const parts = dateStr.split('/');
+            if (parts.length === 3) {
+                const year = parts[0];
+                const month = parts[1].padStart(2, '0');
+                const day = parts[2].padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            return dateStr;
+        }
+
+        // 日付フォーマット変換（input用から表示用）
+        function convertDateForDisplay(dateStr) {
+            if (!dateStr) return '';
+            // "2024-01-15" → "2024/1/15"
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const year = parts[0];
+                const month = parseInt(parts[1]).toString();
+                const day = parseInt(parts[2]).toString();
+                return `${year}/${month}/${day}`;
+            }
+            return dateStr;
+        }
+
+        // 写真を表示
+        function displayPhoto(photoData) {
+            const preview = document.getElementById('photoPreview');
+            const removeBtn = document.getElementById('photoRemoveBtn');
+            
+            if (photoData) {
+                preview.innerHTML = `<img src="${photoData}" alt="宿場の写真" />`;
+                removeBtn.style.display = 'inline-block';
+            } else {
+                preview.innerHTML = `
+                    <div class="photo-placeholder">
+                        <p>写真を追加してください</p>
+                        <p style="font-size: 0.9em; margin-top: 5px;">クリックまたはドラッグ＆ドロップ</p>
+                    </div>
+                `;
+                removeBtn.style.display = 'none';
+            }
+        }
+
+        // 写真アップロード処理
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                displayPhoto(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 写真削除
+        function removePhoto() {
+            displayPhoto(null);
+            document.getElementById('photoUpload').value = '';
+        }
+
+        // 宿場データを保存
+        function saveStationData() {
+            if (!currentEditingStation) return;
+
+            const stationKey = `station_${currentEditingStation}`;
+            const visitDate = document.getElementById('visitDate').value;
+            const photoPreview = document.getElementById('photoPreview').querySelector('img');
+            const photoData = photoPreview ? photoPreview.src : null;
+
+            if (visitDate || photoData) {
+                userData[stationKey] = {
+                    visited: true,
+                    date: visitDate ? convertDateForDisplay(visitDate) : new Date().toLocaleDateString('ja-JP'),
+                    photo: photoData
+                };
+            } else {
+                // 訪問日も写真もない場合は削除
+                delete userData[stationKey];
+            }
+
+            saveUserData();
+            renderStations();
+            updateStats();
+            closeStationDetail();
+        }
+
+        // 写真プレビューエリアにドラッグ＆ドロップ機能を追加
+        function setupDragAndDrop() {
+            const photoPreview = document.getElementById('photoPreview');
+            
+            photoPreview.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                photoPreview.style.borderColor = '#8b7d6b';
+                photoPreview.style.backgroundColor = 'rgba(139, 125, 107, 0.1)';
+            });
+
+            photoPreview.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                photoPreview.style.borderColor = 'rgba(139, 125, 107, 0.3)';
+                photoPreview.style.backgroundColor = 'rgba(245, 241, 232, 0.3)';
+            });
+
+            photoPreview.addEventListener('drop', function(e) {
+                e.preventDefault();
+                photoPreview.style.borderColor = 'rgba(139, 125, 107, 0.3)';
+                photoPreview.style.backgroundColor = 'rgba(245, 241, 232, 0.3)';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        displayPhoto(e.target.result);
+                    };
+                    reader.readAsDataURL(files[0]);
+                }
+            });
+
+            // クリックでファイル選択
+            photoPreview.addEventListener('click', function() {
+                if (!photoPreview.querySelector('img')) {
+                    document.getElementById('photoUpload').click();
+                }
+            });
+        }
+
+        // ユーザーデータの管理
+        function saveUserData() {
+            const allUserData = JSON.parse(localStorage.getItem('tokaidoUsers') || '{}');
+            allUserData[currentUser] = userData;
+            localStorage.setItem('tokaidoUsers', JSON.stringify(allUserData));
+        }
+
+        function loadUserData() {
+            const allUserData = JSON.parse(localStorage.getItem('tokaidoUsers') || '{}');
+            userData = allUserData[currentUser] || {};
+        }
+
+        // ログイン処理
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                alert('ユーザー名を入力してください');
+                return;
+            }
+
+            currentUser = username;
+            loadUserData();
+            
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('currentUser').textContent = `ようこそ、${currentUser}さん！`;
+            
+            renderStations();
+            updateStats();
+        }
+
+        // ログアウト処理
+        function logout() {
+            currentUser = null;
+            userData = {};
+            
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('username').value = '';
+        }
+
+        // 宿場の訪問状態を切り替え
+        function toggleVisit(stationNumber) {
+            const stationKey = `station_${stationNumber}`;
+            
+            if (userData[stationKey]) {
+                delete userData[stationKey];
+            } else {
+                userData[stationKey] = {
+                    visited: true,
+                    date: new Date().toLocaleDateString('ja-JP')
+                };
+            }
+            
+            saveUserData();
+            renderStations();
+            updateStats();
+        }
+
+        // 統計情報を更新
+        function updateStats() {
+            const visitedCount = Object.keys(userData).length;
+            const remainingCount = 54 - visitedCount;
+            const progressPercent = Math.round((visitedCount / 54) * 100);
+            
+            document.getElementById('visitedCount').textContent = visitedCount;
+            document.getElementById('remainingCount').textContent = remainingCount;
+            document.getElementById('progressPercent').textContent = `${progressPercent}%`;
+            document.getElementById('progressFill').style.width = `${progressPercent}%`;
+        }
+
+        // 宿場カードを生成
+        function createStationCard(station) {
+            const stationKey = `station_${station.number}`;
+            const isVisited = userData[stationKey];
+            
+            return `
+                <div class="station-card ${isVisited ? 'visited' : ''}" data-visited="${isVisited ? 'true' : 'false'}">
+                    <div class="station-header">
+                        <div class="station-number">${station.number}</div>
+                    </div>
+                    <div class="station-name">${station.name}</div>
+                    <div class="station-reading">${station.reading}</div>
+                    <div class="station-location">${station.location}</div>
+                    <div class="visit-checkbox" onclick="toggleVisit(${station.number})">
+                        <input type="checkbox" ${isVisited ? 'checked' : ''} />
+                        <label>訪問済み</label>
+                    </div>
+                    ${isVisited ? `<div class="visited-date">訪問日: ${isVisited.date}</div>` : ''}
+                    <div class="station-actions">
+                        <button class="edit-btn styled-btn" onclick="openStationDetail(${station.number})">詳細・編集</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 宿場一覧を描画
+        function renderStations() {
+            const grid = document.getElementById('stationsGrid');
+            let filteredStations = stations;
+            
+            if (currentFilter === 'visited') {
+                filteredStations = stations.filter(station => userData[`station_${station.number}`]);
+            } else if (currentFilter === 'unvisited') {
+                filteredStations = stations.filter(station => !userData[`station_${station.number}`]);
+            }
+            
+            grid.innerHTML = filteredStations.map(createStationCard).join('');
+        }
+
+        // フィルター機能
+        function filterStations(filter) {
+            currentFilter = filter;
+            
+            // ボタンの状態を更新
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderStations();
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            
+            setupDragAndDrop();
+        });
+    </script>
+</body>
+</html>
